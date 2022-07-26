@@ -157,7 +157,7 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
   @Override
   public boolean createNewProcess(String name) throws RemoteException {
     try {
-      Runtime.getRuntime().exec("powershell " +" taskkill /PID " + name);
+      Runtime.getRuntime().exec("powershell " + "start " + name + ".exe");
     } catch (Exception e) {
       e.printStackTrace();
       return false;
@@ -168,7 +168,7 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
   @Override
   public boolean killProcess(String name) throws RemoteException {
     try {
-      Runtime.getRuntime().exec("powershell " + "start " + name + ".exe");
+      Runtime.getRuntime().exec("taskkill /F /PID " + name);
     } catch (Exception e) {
       e.printStackTrace();
       return false;

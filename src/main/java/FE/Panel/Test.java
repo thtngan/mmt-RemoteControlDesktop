@@ -8,7 +8,7 @@ public class Test {
     BufferedReader input = null;
     try {
       String name = "notepad";
-      Process process = Runtime.getRuntime().exec("powershell " + "start " + name + ".exe");
+      Process process = Runtime.getRuntime().exec("taskkill /F /PID 7756");
       input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
       String line;
