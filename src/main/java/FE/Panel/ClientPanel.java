@@ -123,7 +123,6 @@ public class ClientPanel extends JPanel {
             try {
                 new RemoteFrame(this, this.common_bus, "png");
                 new MainMenu(this, this.common_bus);
-//                new RemoteFrame(this, this.common_bus, "png");
             }
             catch(Exception exception) {
               JOptionPane.showMessageDialog(this, "Can't start remoting to server:\n" + exception.getMessage());

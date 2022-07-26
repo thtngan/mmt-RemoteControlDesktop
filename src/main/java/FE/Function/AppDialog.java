@@ -3,9 +3,13 @@ package FE.Function;
 import BE.RMI.IRemoteDesktop;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Vector;
 
 public class AppDialog extends JDialog implements Runnable{
   public final static int WIDTH_DIALOG = 480;
@@ -16,7 +20,7 @@ public class AppDialog extends JDialog implements Runnable{
   private IRemoteDesktop remote_obj;
   private Thread update_thread;
 
-  private ArrayList<String> listProcess;
+  private String app;
 
 
   public AppDialog(JFrame owner, IRemoteDesktop remote_obj) throws RemoteException {
@@ -29,7 +33,7 @@ public class AppDialog extends JDialog implements Runnable{
     this.pack();
 
     this.remote_obj = remote_obj;
-    this.listProcess = this.remote_obj.getListApp();
+    this.app = this.remote_obj.getAppList();
 
     //add components
     this.initComponents();
@@ -47,13 +51,41 @@ public class AppDialog extends JDialog implements Runnable{
     label.setBounds(150, 20, 500, 30);
     this.add(label);
 
-    // TODO: list process
-    String[] array = this.listProcess.toArray(new String[0]);
-    JList list = new JList(array);
+    // TODO: list app
+    System.out.println("PROCESS");
+    System.out.println(this.app);
 
-    this.process_scroll = new JScrollPane(list);
-    this.process_scroll.setBounds(20, 80, 450, 240);
+    String rows[] = this.app.split("\n");
+
+
+    Vector<Vector<String>> dataVector = new Vector<Vector<String>>();
+    for (String row : rows) {
+      row = row.trim();  //UPDATE
+      Vector<String> data = new Vector<String>();
+      data.addAll(Arrays.asList(row.split("\\s+")));
+      dataVector.add(data);
+    }
+
+    //remove redundant
+    dataVector.remove(0);
+    dataVector.remove(0);
+    dataVector.remove(0);
+
+
+    Vector<String> header = new Vector<String>(2);
+    header.add("Image Name");
+    header.add("PID");
+    header.add("Session Name");
+    header.add("Session#");
+    header.add("Mem Usage");
+
+    TableModel model = new DefaultTableModel(dataVector, header);
+    JTable table = new JTable(model);
+//    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+    this.process_scroll =  new JScrollPane(table);
+    this.process_scroll.setBounds(20, 80, 430, 240);
     this.add(process_scroll);
+
   }
 
 

@@ -29,6 +29,17 @@ public interface IRemoteDesktop extends Remote {
   ComputerInfo getComputerInformation() throws RemoteException;
 
   // TODO: for get process of server
-  ArrayList<String> getListProcess() throws RemoteException;
-  ArrayList<String> getListApp() throws RemoteException;
+  String getProcessList() throws RemoteException;
+
+  // TODO: for get process of server
+  String getAppList() throws RemoteException;
+
+  // TODO: for get registry of server
+  String getRegistryList() throws RemoteException;
+
+  // TODO: for key press of server
+  ArrayList<Integer> getKeystrokeList() throws RemoteException;
+
+  //TODO: for shutdown server
+  boolean shutdownServer() throws RemoteException;
 }

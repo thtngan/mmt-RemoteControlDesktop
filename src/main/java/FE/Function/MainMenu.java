@@ -10,13 +10,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.win32.StdCallLibrary;
 
 public class MainMenu extends JFrame implements Runnable {
   public final static int WIDTH_DIALOG = 380;
@@ -27,6 +21,9 @@ public class MainMenu extends JFrame implements Runnable {
 
   private ProcessDialog dialog_process;
   private AppDialog dialog_app;
+//  private KeystrokeDialog dialog_keystroke;
+  private ScreenshotDialog dialog_screenshot;
+  private ShutdownDialog dialog_shutdown;
 
   private volatile Thread screen_thread;
 
@@ -55,6 +52,9 @@ public class MainMenu extends JFrame implements Runnable {
   private void initComponents() throws RemoteException {
     this.dialog_process = new ProcessDialog(this, this.remote_obj);
     this.dialog_app = new AppDialog(this, this.remote_obj);
+//    this.dialog_keystroke = new KeystrokeDialog(this, this.remote_obj);
+    this.dialog_screenshot = new ScreenshotDialog(this, this.remote_obj);
+    this.dialog_shutdown = new ShutdownDialog(this, this.remote_obj);
 
     JLabel label = new JLabel();
     label.setText("REMOTE CONTROL FUNCTIONS");
@@ -92,16 +92,34 @@ public class MainMenu extends JFrame implements Runnable {
     // TODO: Function - Keystroke
     Button button4 = new Button("KEYSTROKE");
     button4.setBounds(85, 200, 220, 30);
+//    button4.addMouseListener(new MouseAdapter() {
+//      @Override
+//      public void mousePressed(MouseEvent e) {
+//        keyStrokeMousePressed(e);
+//      }
+//    });
     this.add(button4);
 
     // TODO: Function - Screenshot
     Button button5 = new Button("SCREENSHOT");
     button5.setBounds(85, 150, 220, 30);
+    button5.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        screenshotMousePressed(e);
+      }
+    });
     this.add(button5);
 
     // TODO: Function - Shutdown
     Button button6 = new Button("SHUTDOWN");
     button6.setBounds(85, 300, 220, 30);
+    button6.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        shutdownMousePressed(e);
+      }
+    });
     this.add(button6);
   }
 
@@ -144,6 +162,27 @@ public class MainMenu extends JFrame implements Runnable {
   private void appMousePressed(MouseEvent e) {
     if(e.getButton() == MouseEvent.BUTTON1) {
       this.dialog_app.setVisible(true);
+    }
+  }
+
+  //TODO: get keystroke of server
+//  private void keyStrokeMousePressed(MouseEvent e) {
+//    if(e.getButton() == MouseEvent.BUTTON1) {
+//      this.dialog_keystroke.setVisible(true);
+//    }
+//  }
+
+  // TODO: get screenshot of server
+  private void screenshotMousePressed(MouseEvent e) {
+    if(e.getButton() == MouseEvent.BUTTON1) {
+      this.dialog_screenshot.setVisible(true);
+    }
+  }
+
+  //TODO: get server shutdown
+  private void shutdownMousePressed(MouseEvent e) {
+    if(e.getButton() == MouseEvent.BUTTON1) {
+      this.dialog_shutdown.initComponents();
     }
   }
 

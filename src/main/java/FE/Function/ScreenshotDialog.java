@@ -2,28 +2,31 @@ package FE.Function;
 
 import BE.RMI.IRemoteDesktop;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class ProcessDialog extends JDialog implements Runnable{
-  public final static int WIDTH_DIALOG = 470;
-  public final static int HEIGHT_DIALOG = 380;
+public class ScreenshotDialog extends JDialog implements Runnable{
+  public final static int WIDTH_DIALOG = 800;
+  public final static int HEIGHT_DIALOG = 800;
 
   private JScrollPane process_scroll;
 
   private IRemoteDesktop remote_obj;
   private Thread update_thread;
 
-  private ArrayList<String> listProcess;
-  private String process;
+  private byte[] pic;
 
-  public ProcessDialog(JFrame owner, IRemoteDesktop remote_obj) throws RemoteException {
+  public ScreenshotDialog(JFrame owner, IRemoteDesktop remote_obj) throws RemoteException {
     super(owner);
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     this.setTitle("PROCESS INFORMATION");
@@ -33,8 +36,11 @@ public class ProcessDialog extends JDialog implements Runnable{
     this.pack();
 
     this.remote_obj = remote_obj;
-//    this.listProcess = this.remote_obj.getListProcess();
-    this.process = this.remote_obj.getProcessList();
+    try {
+      this.pic = this.remote_obj.takeScreenshotServer("png");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     //add components
     this.initComponents();
 
@@ -52,37 +58,16 @@ public class ProcessDialog extends JDialog implements Runnable{
     this.add(label);
 
     // TODO: list process
-    System.out.println("PROCESS");
-    System.out.println(this.process);
-
-    String rows[] = this.process.split("\n");
-
-
-    Vector<Vector<String>> dataVector = new Vector<Vector<String>>();
-    for (String row : rows) {
-      row = row.trim();  //UPDATE
-      Vector<String> data = new Vector<String>();
-      data.addAll(Arrays.asList(row.split("\\s+")));
-      dataVector.add(data);
+    ByteArrayInputStream bis = new ByteArrayInputStream(this.pic);
+    BufferedImage screenshot = null;
+    try {
+      screenshot = ImageIO.read(bis);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
 
-    //remove redundant
-    dataVector.remove(0);
-    dataVector.remove(0);
-    dataVector.remove(0);
-
-
-    Vector<String> header = new Vector<String>(2);
-    header.add("Image Name");
-    header.add("PID");
-    header.add("Session Name");
-    header.add("Session#");
-    header.add("Mem Usage");
-
-    TableModel model = new DefaultTableModel(dataVector, header);
-    JTable table = new JTable(model);
-//    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    this.process_scroll =  new JScrollPane(table);
+    JLabel picLabel = new JLabel(new ImageIcon(screenshot));
+    this.process_scroll =  new JScrollPane(picLabel);
     this.process_scroll.setBounds(20, 80, 430, 240);
     this.add(process_scroll);
   }

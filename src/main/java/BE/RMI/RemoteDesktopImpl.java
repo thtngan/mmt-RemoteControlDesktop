@@ -1,25 +1,24 @@
 package BE.RMI;
 
-import FE.Function.MainMenu;
-import FE.Function.User32;
 import FE.Information.ComputerInfo;
 import FE.Information.DriveInfo;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
 import com.sun.management.OperatingSystemMXBean;
+
 
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Optional;
 
 public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDesktop {
@@ -119,16 +118,6 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
     return pc_info;
   }
 
-  @Override
-  public ArrayList<String> getListProcess() throws RemoteException {
-    ArrayList<String> list = new ArrayList<>();
-    ProcessHandle.allProcesses()
-        .forEach(process ->
-            list.add(processDetails(process))
-        );
-    return list;
-  }
-
   private String processDetails(ProcessHandle process) {
     return String.format("%8s %8s %30s %10s",
         process.pid(),
@@ -141,31 +130,137 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
     return optional.map(Object::toString).orElse("-");
   }
 
+  @Override
+  public String getProcessList() throws RemoteException {
+    String str = "";
+    try {
+      Process p = Runtime.getRuntime().exec("tasklist");
+      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+      String line;
+      StringBuilder stringBuilder = new StringBuilder();
+
+      while ((line = input.readLine()) != null) {
+        stringBuilder.append(line);
+        stringBuilder.append("\n");
+      }
+
+      str = stringBuilder.toString();
+
+      System.out.println(str);
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+    return str;
+  }
+
+
+//  public interface User32 extends StdCallLibrary {
+//    User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class);
+//
+//    interface WNDENUMPROC extends StdCallCallback {
+//      boolean callback(Pointer hWnd, Pointer arg);
+//    }
+//
+//    boolean EnumWindows(User32.WNDENUMPROC lpEnumFunc, Pointer userData);
+//    int GetWindowTextA(Pointer hWnd, byte[] lpString, int nMaxCount);
+//    int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpString);
+//  }
+//  @Override
+//  public ArrayList<String> getListApp() {
+//    final ArrayList<String> windowNames = new ArrayList<String>();
+//    final User32 user32 = User32.INSTANCE;
+//    user32.EnumWindows(new User32.WNDENUMPROC() {
+//      @Override
+//      public boolean callback(Pointer hWnd, Pointer arg) {
+//        byte[] windowText = new byte[512];
+//        IntByReference pidPointer = new IntByReference();
+//
+//        user32.GetWindowTextA(hWnd, windowText, 512);
+//        user32.GetWindowThreadProcessId(hWnd, pidPointer);
+//        int pid = pidPointer.getValue();
+//
+//        String wText = Native.toString(windowText).trim();
+//        if (!wText.isEmpty()) {
+//          String wTexts = Native.toString(windowText).trim() + " - " + String.valueOf(pid);
+//          windowNames.add(wTexts);
+//        }
+//        return true;
+//      }
+//    }, null);
+//
+//    return windowNames;
+//  }
 
   @Override
-  public ArrayList<String> getListApp() {
-    final ArrayList<String> windowNames = new ArrayList<String>();
-    final User32 user32 = User32.INSTANCE;
-    user32.EnumWindows(new User32.WNDENUMPROC() {
-      @Override
-      public boolean callback(Pointer hWnd, Pointer arg) {
-        byte[] windowText = new byte[512];
-        IntByReference pidPointer = new IntByReference();
+  public String getAppList() throws RemoteException {
+    String str = "";
+    try {
+      Process p = Runtime.getRuntime().exec("powershell \"gps | where {$_.MainWindowTitle } | select id, name");
+      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-        user32.GetWindowTextA(hWnd, windowText, 512);
-        user32.GetWindowThreadProcessId(hWnd, pidPointer);
-        int pid = pidPointer.getValue();
+      String line;
+      StringBuilder stringBuilder = new StringBuilder();
 
-        String wText = Native.toString(windowText).trim();
-        if (!wText.isEmpty()) {
-          String wTexts = Native.toString(windowText).trim() + " - " + String.valueOf(pid);
-          windowNames.add(wTexts);
-        }
-        return true;
+      while ((line = input.readLine()) != null) {
+        stringBuilder.append(line);
+        stringBuilder.append("\n");
       }
-    }, null);
 
-    return windowNames;
+      str = stringBuilder.toString();
+
+      System.out.println(str);
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+    return str;
   }
+
+  @Override
+  public String getRegistryList() throws RemoteException {
+    String str = "";
+    try {
+      Process p = Runtime.getRuntime().exec("reg query " + '"'+ "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\"
+          + "Explorer\\Shell Folders" + "\" /v " + "Personal");
+      BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+      String line;
+      StringBuilder stringBuilder = new StringBuilder();
+
+      while ((line = input.readLine()) != null) {
+        stringBuilder.append(line);
+        stringBuilder.append("\n");
+      }
+
+      str = stringBuilder.toString();
+
+      System.out.println(str);
+    } catch (Exception err) {
+      err.printStackTrace();
+    }
+    return str;
+  }
+
+  @Override
+  public ArrayList<Integer>  getKeystrokeList() throws RemoteException {
+    ArrayList<Integer> list = new ArrayList<>();
+
+
+
+    return list;
+  }
+
+  @Override
+  public boolean shutdownServer() throws RemoteException {
+
+    try {
+      Runtime.getRuntime().exec("shutdown -s -t 0");
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
 
 }
