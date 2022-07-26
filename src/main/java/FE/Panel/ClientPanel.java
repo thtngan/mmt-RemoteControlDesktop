@@ -3,8 +3,7 @@ package FE.Panel;
 import BE.Common.CommonBus;
 import FE.Common.CommonLabel;
 import FE.Common.CommonPanel;
-import FE.Function.MainMenu;
-import FE.Information.RemoteFrame;
+import FE.MainMenu;
 import FE.MainFrame;
 
 import javax.swing.*;
@@ -121,7 +120,7 @@ public class ClientPanel extends JPanel {
           // TODO: show remote screen
           EventQueue.invokeLater(() -> {
             try {
-                new RemoteFrame(this, this.common_bus, "png");
+//                new RemoteFrame(this, this.common_bus, "png");
                 new MainMenu(this, this.common_bus);
             }
             catch(Exception exception) {

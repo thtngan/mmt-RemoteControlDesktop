@@ -6,36 +6,35 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
 public class ProcessDialog extends JDialog implements Runnable{
   public final static int WIDTH_DIALOG = 470;
-  public final static int HEIGHT_DIALOG = 380;
+  public final static int HEIGHT_DIALOG = 430;
 
   private JScrollPane process_scroll;
 
   private IRemoteDesktop remote_obj;
   private Thread update_thread;
 
-  private ArrayList<String> listProcess;
+  private String nameProcess;
   private String process;
 
   public ProcessDialog(JFrame owner, IRemoteDesktop remote_obj) throws RemoteException {
     super(owner);
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     this.setTitle("PROCESS INFORMATION");
-    this.setResizable(false);
+    this.setResizable(true);
     this.getContentPane().setPreferredSize(new Dimension(ProcessDialog.WIDTH_DIALOG, ProcessDialog.HEIGHT_DIALOG));
     this.setLayout(null);
     this.pack();
 
     this.remote_obj = remote_obj;
-//    this.listProcess = this.remote_obj.getListProcess();
     this.process = this.remote_obj.getProcessList();
-    //add components
     this.initComponents();
 
     // TODO: start graph
@@ -85,6 +84,40 @@ public class ProcessDialog extends JDialog implements Runnable{
     this.process_scroll =  new JScrollPane(table);
     this.process_scroll.setBounds(20, 80, 430, 240);
     this.add(process_scroll);
+
+    // TODO: Button add new process
+    TextField textField = new TextField("Enter name");
+    textField.setBounds(20, 340, 320, 30);
+    this.add(textField);
+
+    Button addBtn = new Button("Add new");
+    addBtn.setBounds(340, 340, 110, 30);
+    addBtn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        String name = textField.getText();
+        newProcessMousePressed(e, name);
+      }
+    });
+    this.add(addBtn);
+
+
+    // TODO: Button delete process
+    Button delBtn = new Button("Click process then press delete");
+    delBtn.setBounds(20, 380, 430, 30);
+    delBtn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        int PID = table.getSelectedRow();
+
+        if (PID != -1) {
+          killProcessMousePressed(e, String.valueOf(PID));
+          ((DefaultTableModel) model).removeRow(table.getSelectedRow());
+        }
+
+      }
+    });
+    this.add(delBtn);
   }
 
 
@@ -102,4 +135,35 @@ public class ProcessDialog extends JDialog implements Runnable{
       this.update_thread.interrupt();
   }
 
+  private void newProcessMousePressed(MouseEvent e, String name) {
+      System.out.println(name);
+      try {
+        boolean createProcess = this.remote_obj.createNewProcess(name);
+        if (createProcess == true) {
+          JOptionPane.showMessageDialog(this,"Create process successfully");
+        }
+        else {
+          JOptionPane.showMessageDialog(this,"Create process fail.","Alert",JOptionPane.WARNING_MESSAGE);
+        }
+      } catch (RemoteException ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this,"Create process error.","Alert",JOptionPane.WARNING_MESSAGE);
+      }
+  }
+
+  private void killProcessMousePressed(MouseEvent e, String PID) {
+    System.out.println(PID);
+    try {
+      boolean delProcess = this.remote_obj.killProcess(PID);
+      if (delProcess == true) {
+        JOptionPane.showMessageDialog(this,"Delete process successfully");
+      }
+      else {
+        JOptionPane.showMessageDialog(this,"Delete process fail.","Alert",JOptionPane.WARNING_MESSAGE);
+      }
+    } catch (RemoteException ex) {
+      ex.printStackTrace();
+      JOptionPane.showMessageDialog(this,"Delete process error.","Alert",JOptionPane.WARNING_MESSAGE);
+    }
+  }
 }

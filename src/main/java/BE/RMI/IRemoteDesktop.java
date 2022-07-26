@@ -5,7 +5,6 @@ import FE.Information.ComputerInfo;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
 
 public interface IRemoteDesktop extends Remote {
   // TODO: for capture screen to share
@@ -30,6 +29,8 @@ public interface IRemoteDesktop extends Remote {
 
   // TODO: for get process of server
   String getProcessList() throws RemoteException;
+  boolean createNewProcess(String name) throws RemoteException;
+  boolean killProcess(String name) throws RemoteException;
 
   // TODO: for get process of server
   String getAppList() throws RemoteException;

@@ -7,9 +7,9 @@ public class Test {
   public static void main (String[] args) {
     BufferedReader input = null;
     try {
-      Process p = Runtime.getRuntime().exec("reg query " + '"'+ "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\"
-          + "Explorer\\Shell Folders");
-      input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+      String name = "notepad";
+      Process process = Runtime.getRuntime().exec("powershell " + "start " + name + ".exe");
+      input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
       String line;
       StringBuilder stringBuilder = new StringBuilder();

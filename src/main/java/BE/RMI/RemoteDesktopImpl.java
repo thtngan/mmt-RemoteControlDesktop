@@ -154,6 +154,28 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
     return str;
   }
 
+  @Override
+  public boolean createNewProcess(String name) throws RemoteException {
+    try {
+      Runtime.getRuntime().exec("powershell " +" taskkill /PID " + name);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public boolean killProcess(String name) throws RemoteException {
+    try {
+      Runtime.getRuntime().exec("powershell " + "start " + name + ".exe");
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
 
 //  public interface User32 extends StdCallLibrary {
 //    User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class);
@@ -252,7 +274,6 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
 
   @Override
   public boolean shutdownServer() throws RemoteException {
-
     try {
       Runtime.getRuntime().exec("shutdown -s -t 0");
     } catch (IOException e) {

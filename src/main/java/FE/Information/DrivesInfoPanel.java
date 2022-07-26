@@ -1,5 +1,7 @@
 package FE.Information;
 
+import FE.Function.HardwareDialog;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -35,7 +37,7 @@ public class DrivesInfoPanel extends JPanel {
       // TODO: style os_name_label
       JLabel os_name_label = new JLabel();
       os_name_label.setText("Operating System: " + pc_info.getOsName());
-      os_name_label.setFont(new Font("segoe ui", Font.BOLD | Font.ITALIC, 17));
+      os_name_label.setFont(new Font("segoe ui", Font.BOLD, 17));
       os_name_label.setForeground(Color.BLUE);
       os_name_label.setBounds(30, 0, HardwareDialog.WIDTH_DIALOG - 100, 30);
       this.add(os_name_label);

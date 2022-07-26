@@ -1,6 +1,8 @@
-package FE.Information;
+package FE.Function;
 
 import BE.RMI.IRemoteDesktop;
+import FE.Information.DrivesInfoPanel;
+import FE.Information.HardwareGraph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +28,7 @@ public class HardwareDialog extends JDialog implements Runnable {
   public HardwareDialog(JFrame owner, IRemoteDesktop remote_obj) throws RemoteException {
     super(owner);
     this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    this.setTitle("Hardware information");
+    this.setTitle("HARDWARE INFORMATION");
     this.setResizable(false);
     this.getContentPane().setPreferredSize(new Dimension(HardwareDialog.WIDTH_DIALOG, HardwareDialog.HEIGHT_DIALOG));
     this.setLayout(null);

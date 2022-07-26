@@ -1,7 +1,12 @@
-package FE.Function;
+package FE;
 
 import BE.Common.CommonBus;
 import BE.RMI.IRemoteDesktop;
+import FE.Function.AppDialog;
+import FE.Function.ProcessDialog;
+import FE.Function.ScreenshotDialog;
+import FE.Function.ShutdownDialog;
+import FE.Function.HardwareDialog;
 import FE.Panel.ClientPanel;
 
 import javax.swing.*;
@@ -19,6 +24,7 @@ public class MainMenu extends JFrame implements Runnable {
   private CommonBus common_bus;
   private IRemoteDesktop remote_obj;
 
+  private HardwareDialog dialog_hardware;
   private ProcessDialog dialog_process;
   private AppDialog dialog_app;
 //  private KeystrokeDialog dialog_keystroke;
@@ -50,6 +56,7 @@ public class MainMenu extends JFrame implements Runnable {
   }
 
   private void initComponents() throws RemoteException {
+    this.dialog_hardware = new HardwareDialog(this, this.remote_obj);
     this.dialog_process = new ProcessDialog(this, this.remote_obj);
     this.dialog_app = new AppDialog(this, this.remote_obj);
 //    this.dialog_keystroke = new KeystrokeDialog(this, this.remote_obj);
@@ -62,9 +69,20 @@ public class MainMenu extends JFrame implements Runnable {
     label.setBounds(90, 20, 510, 30);
     this.add(label);
 
+    // TODO: Function - Hardware Information
+    Button button0 = new Button("HARDWARE INFORMATION");
+    button0.setBounds(85, 50, 220, 30);
+    button0.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        menuMonitorMousePressed(e);
+      }
+    });
+    this.add(button0);
+
     // TODO: Function - Process Running
     Button button1 = new Button("LIST PROCESS RUNNING");
-    button1.setBounds(85, 50, 220, 30);
+    button1.setBounds(85, 100, 220, 30);
     button1.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
@@ -75,7 +93,7 @@ public class MainMenu extends JFrame implements Runnable {
 
     // TODO: Function - App Running
     Button button2 = new Button("LIST APP RUNNING");
-    button2.setBounds(85, 100, 220, 30);
+    button2.setBounds(85, 150, 220, 30);
     button2.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
@@ -86,12 +104,12 @@ public class MainMenu extends JFrame implements Runnable {
 
     // TODO: Function - Edit registry
     Button button3 = new Button("LIST REGISTRY");
-    button3.setBounds(85, 250, 220, 30);
+    button3.setBounds(85, 200, 220, 30);
     this.add(button3);
 
     // TODO: Function - Keystroke
     Button button4 = new Button("KEYSTROKE");
-    button4.setBounds(85, 200, 220, 30);
+    button4.setBounds(85, 250, 220, 30);
 //    button4.addMouseListener(new MouseAdapter() {
 //      @Override
 //      public void mousePressed(MouseEvent e) {
@@ -102,7 +120,7 @@ public class MainMenu extends JFrame implements Runnable {
 
     // TODO: Function - Screenshot
     Button button5 = new Button("SCREENSHOT");
-    button5.setBounds(85, 150, 220, 30);
+    button5.setBounds(85, 250, 220, 30);
     button5.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
@@ -151,6 +169,13 @@ public class MainMenu extends JFrame implements Runnable {
 //
 //  }
 
+  // TODO: get hardware info of server
+  private void menuMonitorMousePressed(MouseEvent e) {
+    if(e.getButton() == MouseEvent.BUTTON1) {
+      this.dialog_hardware.setVisible(true);
+    }
+  }
+
   //TODO: get process info of server
   private void processMousePressed(MouseEvent e) {
     if(e.getButton() == MouseEvent.BUTTON1) {
@@ -175,6 +200,7 @@ public class MainMenu extends JFrame implements Runnable {
   // TODO: get screenshot of server
   private void screenshotMousePressed(MouseEvent e) {
     if(e.getButton() == MouseEvent.BUTTON1) {
+      this.dialog_screenshot.initComponents();
       this.dialog_screenshot.setVisible(true);
     }
   }

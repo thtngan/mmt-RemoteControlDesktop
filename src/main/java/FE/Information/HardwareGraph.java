@@ -1,5 +1,7 @@
 package FE.Information;
 
+import FE.Function.HardwareDialog;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;

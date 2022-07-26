@@ -1,7 +1,8 @@
-package FE.Information;
+package FE;
 
 import BE.Common.CommonBus;
 import BE.RMI.IRemoteDesktop;
+import FE.Function.HardwareDialog;
 import FE.Panel.ClientPanel;
 
 import javax.imageio.ImageIO;

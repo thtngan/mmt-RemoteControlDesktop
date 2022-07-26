@@ -42,14 +42,21 @@ public class ScreenshotDialog extends JDialog implements Runnable{
       e.printStackTrace();
     }
     //add components
-    this.initComponents();
+//    this.initComponents();
 
     // TODO: start graph
     this.update_thread = new Thread(this);
     this.update_thread.setDaemon(true);
     this.update_thread.start();
   }
-  private void initComponents() throws RemoteException {
+
+  public void initComponents() {
+    try {
+      this.pic = this.remote_obj.takeScreenshotServer("png");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
     // TODO: label
     JLabel label = new JLabel();
     label.setText("PROCESS INFORMATION");
@@ -76,7 +83,16 @@ public class ScreenshotDialog extends JDialog implements Runnable{
 
   @Override
   public void run() {
+    try {
+      while(true) {
+        this.pic = this.remote_obj.takeScreenshotServer("png");
 
+        Thread.sleep(500);
+      }
+    }
+    catch(Exception e){
+      this.setVisible(false);
+    }
   }
 
   @Override
