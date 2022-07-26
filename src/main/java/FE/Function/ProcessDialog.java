@@ -34,7 +34,7 @@ public class ProcessDialog extends JDialog implements Runnable{
     this.pack();
 
     this.remote_obj = remote_obj;
-    this.process = this.remote_obj.getProcessList();
+//    this.process = this.remote_obj.getProcessList();
     this.initComponents();
 
     // TODO: start graph
@@ -43,6 +43,7 @@ public class ProcessDialog extends JDialog implements Runnable{
     this.update_thread.start();
   }
   private void initComponents() throws RemoteException {
+    this.process = this.remote_obj.getProcessList();
     // TODO: label
     JLabel label = new JLabel();
     label.setText("PROCESS INFORMATION");
@@ -85,6 +86,17 @@ public class ProcessDialog extends JDialog implements Runnable{
     this.process_scroll.setBounds(20, 80, 430, 240);
     this.add(process_scroll);
 
+    // TODO: Button refresh
+    Button refreshBtn = new Button("Refresh");
+    refreshBtn.setBounds(340, 50, 110, 25);
+    refreshBtn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        initListProcess();
+      }
+    });
+    this.add(refreshBtn);
+
     // TODO: Button add new process
     TextField textField = new TextField("Enter name");
     textField.setBounds(20, 340, 320, 30);
@@ -103,24 +115,17 @@ public class ProcessDialog extends JDialog implements Runnable{
 
 
     // TODO: Button delete process
-    Button delBtn = new Button("Click process then press delete");
+    Button delBtn = new Button("Enter PID then press delete");
     delBtn.setBounds(20, 380, 430, 30);
     delBtn.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
-        int PID = table.getSelectedRow();
-
-        if (PID != -1) {
-          killProcessMousePressed(e, String.valueOf(PID));
-          ((DefaultTableModel) model).removeRow(table.getSelectedRow());
-        }
-
+        String PID = textField.getText();
+        killProcessMousePressed(e, PID);
       }
     });
     this.add(delBtn);
   }
-
-
 
   @Override
   public void run() {
@@ -133,6 +138,50 @@ public class ProcessDialog extends JDialog implements Runnable{
     super.dispose();
     if(!this.update_thread.isInterrupted())
       this.update_thread.interrupt();
+  }
+
+  private void initListProcess() {
+    try {
+      this.process = this.remote_obj.getProcessList();
+    } catch (RemoteException ex) {
+      ex.printStackTrace();
+    }
+
+//    System.out.println(this.app);
+    String rows[] = this.process.split("\n");
+
+
+    Vector<Vector<String>> dataVector = new Vector<Vector<String>>();
+    for (String row : rows) {
+      row = row.trim();  //UPDATE
+      Vector<String> data = new Vector<String>();
+      data.addAll(Arrays.asList(row.split("\\s+")));
+      dataVector.add(data);
+    }
+
+    //remove redundant
+    dataVector.remove(0);
+    dataVector.remove(0);
+    dataVector.remove(0);
+
+
+    Vector<String> header = new Vector<String>(2);
+    header.add("Image Name");
+    header.add("PID");
+    header.add("Session Name");
+    header.add("Session#");
+    header.add("Mem Usage");
+
+
+    this.remove(process_scroll);
+    DefaultTableModel model = new DefaultTableModel(dataVector, header);
+    JTable table = new JTable(model);
+//    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+    this.process_scroll =  new JScrollPane(table);
+    this.process_scroll.setBounds(20, 80, 430, 240);
+    this.add(process_scroll);
+
   }
 
   private void newProcessMousePressed(MouseEvent e, String name) {

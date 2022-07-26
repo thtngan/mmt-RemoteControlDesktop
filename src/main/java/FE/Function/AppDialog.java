@@ -92,8 +92,7 @@ public class AppDialog extends JDialog implements Runnable{
     refreshBtn.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
-        initListProcess();
-
+        initListApp();
       }
     });
     this.add(refreshBtn);
@@ -116,22 +115,14 @@ public class AppDialog extends JDialog implements Runnable{
 
 
     // TODO: Button delete process
-    Button delBtn = new Button("Click process then press delete");
+    Button delBtn = new Button("Enter ID then press delete");
     delBtn.setBounds(20, 380, 430, 30);
     delBtn.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
-        int row = table.getSelectedRow();
-        String PID = (String)table.getValueAt(row, 0);
-//        System.out.println("========================");
-//
-//        System.out.println(PID);
-        if (row != -1) {
-          killProcessMousePressed(e, PID);
-//          ((DefaultTableModel) model).removeRow(table.getSelectedRow());
+        String PID = textField.getText();
+        killProcessMousePressed(e, PID);
         }
-
-      }
     });
     this.add(delBtn);
 
@@ -151,14 +142,14 @@ public class AppDialog extends JDialog implements Runnable{
       this.update_thread.interrupt();
   }
 
-  private void initListProcess() {
+  private void initListApp() {
     try {
       this.app = this.remote_obj.getAppList();
     } catch (RemoteException ex) {
       ex.printStackTrace();
     }
 
-    System.out.println(this.app);
+//    System.out.println(this.app);
     String rows[] = this.app.split("\n");
 
 
