@@ -8,6 +8,13 @@ Remote control desktop is a program to control a remote computer. The functions 
 - Keystrokes
 - Shutdown
 
+## Usage
+Clone the repo:
+```bash
+https://github.com/thtngan/mmt-RemoteControlDesktop.git
+```
+Run file jar in *out/artifacts/Remote_jar*
+
 ## Team members
 - [@ThQuang21](https://github.com/ThQuang21): Ngô Thiên Quang – 19126031 
 - [@vuhoanganh6401](https://github.com/vuhoanganh6401): Vũ Hoàng Anh – 19126039 
