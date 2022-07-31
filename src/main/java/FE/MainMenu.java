@@ -3,7 +3,9 @@ package FE;
 import BE.Common.CommonBus;
 import BE.RMI.IRemoteDesktop;
 import FE.Function.AppDialog;
+import FE.Function.KeystrokeDialog;
 import FE.Function.ProcessDialog;
+import FE.Function.RegistryDialog;
 import FE.Function.ScreenshotDialog;
 import FE.Function.ShutdownDialog;
 import FE.Function.HardwareDialog;
@@ -27,7 +29,8 @@ public class MainMenu extends JFrame implements Runnable {
   private HardwareDialog dialog_hardware;
   private ProcessDialog dialog_process;
   private AppDialog dialog_app;
-//  private KeystrokeDialog dialog_keystroke;
+  private RegistryDialog dialog_registry;
+  private KeystrokeDialog dialog_keystroke;
   private ScreenshotDialog dialog_screenshot;
   private ShutdownDialog dialog_shutdown;
 
@@ -59,7 +62,8 @@ public class MainMenu extends JFrame implements Runnable {
     this.dialog_hardware = new HardwareDialog(this, this.remote_obj);
     this.dialog_process = new ProcessDialog(this, this.remote_obj);
     this.dialog_app = new AppDialog(this, this.remote_obj);
-//    this.dialog_keystroke = new KeystrokeDialog(this, this.remote_obj);
+    this.dialog_registry = new RegistryDialog(this, this.remote_obj);
+    this.dialog_keystroke = new KeystrokeDialog(this, this.remote_obj);
     this.dialog_screenshot = new ScreenshotDialog(this, this.remote_obj);
     this.dialog_shutdown = new ShutdownDialog(this, this.remote_obj);
 
@@ -105,17 +109,23 @@ public class MainMenu extends JFrame implements Runnable {
     // TODO: Function - Edit registry
     Button button3 = new Button("LIST REGISTRY");
     button3.setBounds(85, 200, 220, 30);
+    button3.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        registryMousePressed(e);
+      }
+    });
     this.add(button3);
 
     // TODO: Function - Keystroke
     Button button4 = new Button("KEYSTROKE");
     button4.setBounds(85, 250, 220, 30);
-//    button4.addMouseListener(new MouseAdapter() {
-//      @Override
-//      public void mousePressed(MouseEvent e) {
-//        keyStrokeMousePressed(e);
-//      }
-//    });
+    button4.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        keyStrokeMousePressed(e);
+      }
+    });
     this.add(button4);
 
     // TODO: Function - Screenshot
@@ -190,12 +200,24 @@ public class MainMenu extends JFrame implements Runnable {
     }
   }
 
+  // TODO: get registry of server
+  private void registryMousePressed(MouseEvent e) {
+    if(e.getButton() == MouseEvent.BUTTON1) {
+      this.dialog_registry.initComponents();
+      this.dialog_registry.setVisible(true);
+    }
+  }
+
   //TODO: get keystroke of server
-//  private void keyStrokeMousePressed(MouseEvent e) {
-//    if(e.getButton() == MouseEvent.BUTTON1) {
-//      this.dialog_keystroke.setVisible(true);
-//    }
-//  }
+  private void keyStrokeMousePressed(MouseEvent e) {
+    if(e.getButton() == MouseEvent.BUTTON1) {
+      try {
+        this.dialog_keystroke.initComponents();
+      } catch (RemoteException ex) {
+        ex.printStackTrace();
+      }
+    }
+  }
 
   // TODO: get screenshot of server
   private void screenshotMousePressed(MouseEvent e) {

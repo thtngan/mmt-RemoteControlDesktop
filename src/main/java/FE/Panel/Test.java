@@ -7,9 +7,11 @@ public class Test {
   public static void main (String[] args) {
     BufferedReader input = null;
     try {
-      String name = "notepad";
-      Process process = Runtime.getRuntime().exec("taskkill /F /PID 7756");
-      input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      String location = "HKCU\\Test";
+          String key = "ten";
+      Process p = Runtime.getRuntime().exec("reg query " +
+          '"'+ location + "\" ");
+      input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
       String line;
       StringBuilder stringBuilder = new StringBuilder();

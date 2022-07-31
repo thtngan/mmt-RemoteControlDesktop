@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/Remote_jar</output-path>
     <root id="archive" name="Remote.jar">
       <element id="module-output" name="Remote" />
+      <element id="extracted-dir" path="$USER_HOME$/Downloads/jar_files (7)/system-hook-3.8.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

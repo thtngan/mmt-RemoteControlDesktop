@@ -115,7 +115,6 @@ public class ClientPanel extends JPanel {
           if(!this.isFormatIpv4(host)) throw new Exception("Wrong format IPV4");
 
           this.common_bus.startConnectingToServer(host, port, password);
-          System.out.println("aa");
 
           // TODO: show remote screen
           EventQueue.invokeLater(() -> {

