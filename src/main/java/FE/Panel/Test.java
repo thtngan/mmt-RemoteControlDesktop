@@ -7,10 +7,8 @@ public class Test {
   public static void main (String[] args) {
     BufferedReader input = null;
     try {
-      String location = "HKCU\\Test";
-          String key = "ten";
-      Process p = Runtime.getRuntime().exec("reg query " +
-          '"'+ location + "\" ");
+      Process p = Runtime.getRuntime().exec("reg query " + '"'+ "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\"
+          + "Explorer\\Shell Folders" );
       input = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
       String line;

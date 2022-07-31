@@ -41,7 +41,8 @@ public interface IRemoteDesktop extends Remote {
   String getRegistryList(String keyPath, String keyName) throws RemoteException;
 
   // TODO: for key press of server
-  ArrayList<String> getKeystroke(ArrayList<String> keyList) throws RemoteException;
+  void getKeystroke(ArrayList<String> list) throws RemoteException;
+  ArrayList<String> printKeyStroke() throws RemoteException;
 
   //TODO: for shutdown server
   boolean shutdownServer() throws RemoteException;

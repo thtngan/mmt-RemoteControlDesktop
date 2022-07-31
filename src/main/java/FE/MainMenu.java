@@ -213,6 +213,7 @@ public class MainMenu extends JFrame implements Runnable {
     if(e.getButton() == MouseEvent.BUTTON1) {
       try {
         this.dialog_keystroke.initComponents();
+        this.dialog_keystroke.setVisible(true);
       } catch (RemoteException ex) {
         ex.printStackTrace();
       }

