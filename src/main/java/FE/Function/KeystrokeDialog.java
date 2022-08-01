@@ -43,7 +43,7 @@ public class KeystrokeDialog extends JDialog implements Runnable{
     this.pack();
 
     this.remote_obj = remote_obj;
-    this.keyboardHook = new GlobalKeyboardHook(true);
+//    this.keyboardHook = new GlobalKeyboardHook(true);
 
     //add components
     this.initComponents();

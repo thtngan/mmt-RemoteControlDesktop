@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.rmi.RemoteException;
@@ -100,6 +102,13 @@ public class ProcessDialog extends JDialog implements Runnable{
     // TODO: Button add new process
     TextField textField = new TextField("Enter name");
     textField.setBounds(20, 340, 320, 30);
+    textField.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        textField.setText("");
+        System.out.println("Hello");
+      }
+    });
     this.add(textField);
 
     Button addBtn = new Button("Add new");
