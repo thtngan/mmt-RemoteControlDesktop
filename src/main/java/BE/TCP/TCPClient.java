@@ -1,7 +1,5 @@
 package BE.TCP;
 
-import BE.Chat.ChatBus;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -41,7 +39,6 @@ public class TCPClient extends Thread {
   public void stopConnectingToTcpServer() throws IOException {
     if(this.is_connected_server = true) {
       this.client.close();
-      //this.chat_bus.setSocket(null);
       this.is_connected_server = false;
     }
   }

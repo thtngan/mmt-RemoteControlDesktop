@@ -1,7 +1,5 @@
 package BE.TCP;
 
-import BE.Chat.ChatBus;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
